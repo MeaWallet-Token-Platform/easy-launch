@@ -7,12 +7,14 @@
     "build": "vue-cli-service build --mode production",
     "build-dev": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint",
-    "start": "npm run serve"
+    "start": "npm run serve",
+    "sonar": "./node_modules/.bin/sonar-scanner"
   },
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "document-register-element": "^1.14.10",
+    "sonarqube-scanner": "^2.5.0",
     "vue": "^2.6.11",
     "vue-axios": "^3.2.4",
     "vue-custom-element": "^3.3.0",
