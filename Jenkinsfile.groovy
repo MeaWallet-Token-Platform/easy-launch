@@ -11,4 +11,5 @@ standardFrontendBuild {
     build = true
     confluenceParent = '2558656513'
     confluencePrefix = 'easy-launch'
+    deployDevelopEnvironment = "dev"
 }
