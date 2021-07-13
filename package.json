@@ -10,7 +10,6 @@
     "start": "npm run serve",
     "sonar": "./node_modules/.bin/sonar-scanner",
     "release": "./node_modules/.bin/release-it",
-    "release-int": "npm run release",
     "release-dev": "npm run release -i pre "
   },
   "release-it": {
