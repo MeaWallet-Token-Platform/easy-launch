@@ -23,7 +23,7 @@
     }
   },
   "files": [
-    "dist/css/app.js",
+    "dist/css/app.css",
     "dist/js/app.js"
   ],
   "publishConfig": {
