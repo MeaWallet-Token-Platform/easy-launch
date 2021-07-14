@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-@Library("standardPipelineFunctions@release-1.4.23") _
+@Library("standardPipelineFunctions@release-1.4.35") _
 properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '60', numToKeepStr: '20']]]);
 
 standardFrontendBuild {
@@ -12,4 +12,5 @@ standardFrontendBuild {
     confluenceParent = '2558656513'
     confluencePrefix = 'easy-launch'
     deployDevelopEnvironment = "dev"
+    nexusRepositoryUrl = 'https://nexus.int.meawallet.com/repository/npm-external-access/'
 }
