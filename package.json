@@ -26,6 +26,9 @@
     "dist/css/app.js",
     "dist/js/app.js"
   ],
+  "publishConfig": {
+    "registry": "https://nexus.int.meawallet.com/repository/npm-external-access/"
+  },
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
