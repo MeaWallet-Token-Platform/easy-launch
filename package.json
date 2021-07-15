@@ -1,17 +1,40 @@
 {
   "name": "easy-launch",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.1.6",
+  "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --mode production",
+    "build-dev": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint",
-    "start": "npm run serve"
+    "start": "npm run serve",
+    "sonar": "./node_modules/.bin/sonar-scanner",
+    "release": "./node_modules/.bin/release-it",
+    "release-dev": "npm run release -i pre "
+  },
+  "release-it": {
+    "git": {
+      "tagName": "release-${version}",
+      "requireUpstream": true
+    },
+    "non-interactive": true,
+    "npm": {
+      "publish": false
+    }
+  },
+  "files": [
+    "dist/css/app.css",
+    "dist/js/app.js"
+  ],
+  "publishConfig": {
+    "registry": "https://nexus.int.meawallet.com/repository/npm-external-access/"
   },
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "document-register-element": "^1.14.10",
+    "release-it": "^14.10.0",
+    "sonarqube-scanner": "^2.5.0",
     "vue": "^2.6.11",
     "vue-axios": "^3.2.4",
     "vue-custom-element": "^3.3.0",
