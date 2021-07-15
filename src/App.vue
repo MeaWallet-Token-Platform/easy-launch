@@ -31,6 +31,10 @@ export default {
     apiKey: {
       type: String
     },
+    panImage: {
+      type: Boolean,
+      default: false
+    },
     panTimeout: {
       type: Number
     }
@@ -39,8 +43,7 @@ export default {
     return {
       missingFields: [],
       requiredFields: ['cardId', 'secret', 'publicKey', 'publicKeyFingerprint', 'requestUrl', 'apiKeyId', 'apiKey'],
-      initCardData: false,
-      panTimeout2: 300000,
+      initCardData: false
     }
   },
   methods: {
