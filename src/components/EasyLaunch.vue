@@ -1,7 +1,7 @@
 <template>
   <div class="mea-easy-launch-container">
     <loading :active="activeOverlay" :is-full-page="false" loader="bars" class="mea-overlay-style"/>
-    <CopyToClipboard v-if="encodedData.pan && !activeOverlay" :text="encodedData.pan" @copy=copyPan>
+    <CopyToClipboard v-if="encodedData.pan && !activeOverlay && !cardData.panImage" :text="encodedData.pan" @copy=copyPan>
       <div class="mea-pan-result">{{encodedData.pan}} <span class="mea-copy-text" :class="panCopied ? 'pan-copied' : '' ">{{ copyText }}</span></div>
     </CopyToClipboard>
   </div>
@@ -42,19 +42,33 @@ export default {
           md: forge.md.sha512.create()
         }
       }))
-      easyLaunchService.getPan(this.cardData)
-        .then(response => {
-          this.decryptData(response)
-          if (this.panTimeout !== 0) { // do not init timer to hide PAN data
-            this.initResultTimeout()
-          }
-        })
-        .catch(error => {
-          console.log(error)
-        })
-        .finally(() => {
-          this.activeOverlay = false
-        })
+      if (!this.cardData.panImage) {
+        easyLaunchService.getPan(this.cardData)
+          .then(response => {
+            this.decryptData(response)
+            if (this.panTimeout !== 0) { // do not init timer to hide PAN data
+              this.initResultTimeout()
+            }
+          })
+          .catch(error => {
+            console.log(error)
+          })
+          .finally(() => {
+            this.activeOverlay = false
+          })
+      } else {
+        easyLaunchService.getCardImage(this.cardData)
+          .then(response => {
+            console.log(response)
+          })
+          .catch(error => {
+            console.log(error)
+          })
+          .finally(() => {
+            this.activeOverlay = false
+          })
+      }
+
     },
     decryptData (data) {
       let key = CryptoJS.enc.Hex.parse(this.keyHex)
