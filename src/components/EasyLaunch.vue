@@ -1,9 +1,35 @@
 <template>
   <div class="mea-easy-launch-container">
     <loading :active="activeOverlay" :is-full-page="false" loader="bars" class="mea-overlay-style"/>
-    <CopyToClipboard v-if="encodedData.pan && !activeOverlay && !cardData.panImage" :text="encodedData.pan" @copy=copyPan>
-      <div class="mea-pan-result">{{encodedData.pan}} <span class="mea-copy-text" :class="panCopied ? 'pan-copied' : '' ">{{ copyText }}</span></div>
-    </CopyToClipboard>
+    <template v-if="!activeOverlay && !cardData.panImage">
+      <div class="mea-data mea-pan-result" v-if="encodedData.pan && cardData.showPan">
+        <div class="mea-input-name">PAN:</div> {{encodedData.pan}}
+        <CopyToClipboard :text="encodedData.pan" @copy=copyPan>
+          <span class="mea-copy-text" :class="panCopied ? 'data-copied pan-copied' : '' ">
+            {{ panCopied  ? "Copied!" : "Copy" }}
+          </span>
+        </CopyToClipboard>
+      </div>
+      <div class="mea-data mea-expiry-result" v-if="encodedData.expiry && cardData.showExpiry" >
+        <div class="mea-input-name">Expiry:</div> {{formattedExpiry}}
+        <CopyToClipboard :text="formattedExpiry" @copy=copyExpiry>
+          <span class="mea-copy-text" :class="expiryCopied ? 'data-copied expiry-copied' : '' ">
+            {{ expiryCopied  ? "Copied!" : "Copy" }}
+          </span>
+        </CopyToClipboard>
+      </div>
+      <div class="mea-data mea-cvv-result" v-if="encodedData.cvv && cardData.showCvv">
+        <div class="mea-input-name">CVC:</div> {{encodedData.cvv}}
+      </div>
+      <div class="mea-data mea-emboss-result" v-if="encodedData.embossname && cardData.showEmbossName">
+        <div class="mea-input-name">Name:</div> {{encodedData.embossname}}
+        <CopyToClipboard :text="encodedData.embossname" @copy=copyEmboss>
+          <span class="mea-copy-text" :class="embossCopied ? 'data-copied emboss-copied' : '' ">
+            {{ embossCopied  ? "Copied!" : "Copy" }}
+          </span>
+        </CopyToClipboard>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -22,10 +48,12 @@ export default {
       keyHex: '',
       publicKey: '',
       encodedData: '',
-      copyText: '',
-      panTimeout: 300000,
+      displayTimeout: 60000,
+      formattedExpiry: '',
       activeOverlay: false,
-      panCopied: false
+      panCopied: false,
+      expiryCopied: false,
+      embossCopied: false
     }
   },
   props: {
@@ -33,6 +61,7 @@ export default {
   },
   methods: {
     initEncryptionKey () {
+      this.$emit('infoLog', 'Getting data')
       this.activeOverlay = true
       let publicKey = '-----BEGIN PUBLIC KEY-----' + CryptoJS.enc.Base64.stringify(CryptoJS.enc.Hex.parse(this.publicKey)) + '-----END PUBLIC KEY-----'
       let publicKeyDecoded = forge.pki.publicKeyFromPem(publicKey)
@@ -46,9 +75,8 @@ export default {
         easyLaunchService.getPan(this.cardData)
           .then(response => {
             this.decryptData(response)
-            if (this.panTimeout !== 0) { // do not init timer to hide PAN data
-              this.initResultTimeout()
-            }
+            this.initResultTimeout()
+            this.$emit('infoLog', 'Getting data done')
           })
           .catch(error => {
             console.log(error)
@@ -68,7 +96,6 @@ export default {
             this.activeOverlay = false
           })
       }
-
     },
     decryptData (data) {
       let key = CryptoJS.enc.Hex.parse(this.keyHex)
@@ -78,27 +105,40 @@ export default {
         ciphertext: cryptText
       })
       this.encodedData = JSON.parse(CryptoJS.AES.decrypt(cipherParams, key, { iv: encIv}).toString(CryptoJS.enc.Utf8))
+      if (this.cardData.showExpiry) {
+        this.formatExpiryDate()
+      }
+    },
+    formatExpiryDate() {
+      const t = new Date(this.encodedData.expiry);
+      const month = ('0' + (t.getMonth() + 1)).slice(-2);
+      const year = t.getFullYear().toString().substr(-2)
+      this.formattedExpiry = `${month}/${year}`;
     },
     copyPan () {
-      this.copyText = 'Copied !'
       this.panCopied = true
       setTimeout(() => {
-        this.initCopyText()
+        this.panCopied = false
       }, 2000)
     },
-    initCopyText () {
-      this.copyText = 'Copy'
-      this.panCopied = false
+    copyExpiry () {
+      this.expiryCopied = true
+      setTimeout(() => {
+        this.expiryCopied = false
+      }, 2000)
+    },
+    copyEmboss () {
+      this.embossCopied = true
+      setTimeout(() => {
+        this.embossCopied = false
+      }, 2000)
     },
     initResultTimeout () {
       setTimeout(() => {
         this.encodedData = ''
-      }, this.panTimeout)
+        this.$emit('infoLog', 'Data was cleared')
+      }, this.displayTimeout)
     },
-    initPanTimeout () { // by default we are setting timeout to 5min
-      let timeout = parseInt(this.cardData.panTimeout)
-      this.panTimeout = isNaN(timeout) ? this.panTimeout : timeout * 1000
-    }
   },
   beforeMount () {
     this.publicKey = this.cardData.publicKey
@@ -108,8 +148,6 @@ export default {
   },
   mounted () {
     this.initEncryptionKey()
-    this.initCopyText()
-    this.initPanTimeout()
   },
   components: {
     Loading,

@@ -35,9 +35,22 @@ export default {
       type: Boolean,
       default: false
     },
-    panTimeout: {
-      type: Number
-    }
+    showPan: {
+      type: Boolean,
+      default: true
+    },
+    showCvv: {
+      type: Boolean,
+      default: false
+    },
+    showEmbossName: {
+      type: Boolean,
+      default: false
+    },
+    showExpiry: {
+      type: Boolean,
+      default: false
+    },
   },
   data () {
     return {
@@ -97,11 +110,33 @@ export default {
 
 <style>
   .mea-easy-launch-app {
+    padding: 5px;
+    border: 1px dashed black;
+    min-height: 30px;
     height: 100%;
     width: 100%;
+    position: relative;
+    background-color: #D3D3D3;
   }
-  .mea-easy-launch-app .mea-pan-result .mea-copy-text {
+  .mea-easy-launch-container {
+    display: inline-block;
+  }
+  .mea-data {
+    padding: 3px 0;
+  }
+  .mea-input-name {
+    width: 55px;
+    text-align: right;
+    margin-right: 10px;
+    display: inline-block;
+  }
+  .mea-easy-launch-app .mea-copy-text {
     cursor: pointer;
+    color: #FF8C00;
+    font-style: italic;
+  }
+  .mea-copy-text {
+    padding-left: 5px;
   }
   .mea-easy-launch-app .mea-overlay-style .vld-icon  {
     width: 6%;
